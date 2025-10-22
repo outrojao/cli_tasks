@@ -40,36 +40,44 @@ func (tm TaskManager) ListTasks() {
 	for i, task := range tm.Tasks {
 		fmt.Printf("#%d - %s\n", i+1, task.Name)
 	}
+	fmt.Println()
 }
 
 func (tm *TaskManager) SaveTasks() {
 	jsonData, err := json.MarshalIndent(tm.Tasks, "", " ")
 	if err != nil {
-		fmt.Printf("Could not convert struct data into json file: %s", err.Error())
+		fmt.Printf("Could not convert struct data into json file: %s\n", err.Error())
+		return
 	}
 
-	if err = os.WriteFile(tm.localJsonDir, jsonData, 0666); err != nil {
-		fmt.Printf("Could not save tasks in json file: %s", err.Error())
+	if err = os.WriteFile(tm.localJsonDir, jsonData, 0644); err != nil {
+		fmt.Printf("Could not save tasks in json file: %s\n", err.Error())
 	}
 }
-
 func (tm *TaskManager) LoadTasks() {
 	data, err := os.ReadFile(tm.localJsonDir)
 	if err != nil {
-		fmt.Printf("Error to read file: %s", err.Error())
+
+		if os.IsNotExist(err) {
+			tm.Tasks = []task.Task{}
+			return
+		}
+		fmt.Printf("Error reading file: %s\n", err.Error())
+		return
 	}
 
 	err = json.Unmarshal(data, &tm.Tasks)
 	if err != nil {
-		fmt.Printf("Error to decode JSON: %s", err.Error())
+		fmt.Printf("Error decoding JSON: %s\n", err.Error())
+		return
 	}
 
 	tm.ListTasks()
 }
 
-func CreateTaskManager(jsonDir string) *TaskManager {
+func CreateTaskManager() *TaskManager {
 	return &TaskManager{
-		localJsonDir: jsonDir,
+		localJsonDir: "./tasks.json",
 		Tasks:        []task.Task{},
 	}
 }

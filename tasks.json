@@ -1,10 +1,10 @@
 [
  {
-  "name": "comer",
-  "done": true
+  "name": "correr",
+  "done": false
  },
  {
-  "name": "dormir",
-  "done": false
+  "name": "pular",
+  "done": true
  }
 ]
