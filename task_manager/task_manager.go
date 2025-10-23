@@ -30,6 +30,13 @@ func (tm *TaskManager) RemoveTask(taskName string) {
 	}
 }
 
+func (tm *TaskManager) DoTask(taskName string) {
+	t := tm.GetTask(taskName)
+	if t != nil {
+		t.Do()
+	}
+}
+
 func (tm TaskManager) ListTasks() {
 	if len(tm.Tasks) == 0 {
 		fmt.Println("You don't have any task!")
@@ -71,8 +78,6 @@ func (tm *TaskManager) LoadTasks() {
 		fmt.Printf("Error decoding JSON: %s\n", err.Error())
 		return
 	}
-
-	tm.ListTasks()
 }
 
 func CreateTaskManager() *TaskManager {

@@ -8,4 +8,5 @@ import (
 func InitRoutes() {
 	http.HandleFunc("/", controllers.Index)
 	http.HandleFunc("/create", controllers.CreateTask)
+	http.HandleFunc("/do", controllers.DoTask)
 }
