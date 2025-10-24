@@ -34,7 +34,7 @@ func main() {
 			api.DoTask(taskName)
 		case 3:
 			taskName := utils.GetUserInput[string]("Type the task name: ")
-			tm.RemoveTask(taskName)
+			api.RemoveTask(taskName)
 		case 4:
 			tm.ListTasks()
 		case 5:

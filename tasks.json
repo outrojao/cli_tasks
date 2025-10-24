@@ -18,21 +18,5 @@
  {
   "name": "deitar",
   "done": true
- },
- {
-  "name": "deslizar",
-  "done": true
- },
- {
-  "name": "dançar",
-  "done": true
- },
- {
-  "name": "planar",
-  "done": true
- },
- {
-  "name": "esquiar",
-  "done": false
  }
 ]
