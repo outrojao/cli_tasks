@@ -21,6 +21,12 @@ func (tm TaskManager) GetTask(taskName string) *task.Task {
 	return nil
 }
 
+func (tm *TaskManager) AddTask(taskName string) *task.Task {
+	newTask := task.CreateTask(taskName)
+	tm.Tasks = append(tm.Tasks, *newTask)
+	return newTask
+}
+
 func (tm *TaskManager) RemoveTask(taskName string) {
 	for i := range tm.Tasks {
 		if tm.Tasks[i].Name == taskName {

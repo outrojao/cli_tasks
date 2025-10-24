@@ -25,6 +25,14 @@
  },
  {
   "name": "dançar",
+  "done": true
+ },
+ {
+  "name": "planar",
+  "done": true
+ },
+ {
+  "name": "esquiar",
   "done": false
  }
 ]
