@@ -1,7 +1,7 @@
 .PHONY: all build run clean
 
 BINARY := main
-SRC := main.go
+SRC := cmd/cli/main.go
 BIN_DIR := bin
 
 all: run

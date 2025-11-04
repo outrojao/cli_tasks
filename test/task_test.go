@@ -1,8 +1,8 @@
 package main
 
 import (
-	"cli_tasks/task"
-	taskm "cli_tasks/task_manager"
+	"cli_tasks/internal/app/task"
+	taskm "cli_tasks/internal/app/task_manager"
 	"testing"
 )
 
@@ -24,5 +24,35 @@ func TestCreateTask(t *testing.T) {
 
 	if task == nil {
 		t.Errorf("CreateTask() error")
+	}
+}
+
+func TestRemoveTask(t *testing.T) {
+	tm.Tasks = []task.Task{{Name: "read a book", Done: false}, {Name: "write a card", Done: false}}
+	taskName := "read a book"
+	tm.RemoveTask(taskName)
+
+	if tm.GetTask(taskName) != nil {
+		t.Errorf("RemoveTask() error")
+	}
+}
+
+func TestDoTask(t *testing.T) {
+	tm.Tasks = []task.Task{{Name: "read a book", Done: false}, {Name: "write a card", Done: false}}
+	taskName := "write a card"
+	tm.DoTask(taskName)
+
+	if task := tm.GetTask(taskName); task == nil || !task.Done {
+		t.Errorf("DoTask() error")
+	}
+}
+
+func TestAddTask(t *testing.T) {
+	tm.Tasks = []task.Task{}
+	taskName := "read a book"
+	tm.AddTask(taskName)
+
+	if task := tm.GetTask(taskName); task == nil {
+		t.Errorf("AddTask() error")
 	}
 }

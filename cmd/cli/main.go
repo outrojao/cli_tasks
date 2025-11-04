@@ -1,8 +1,8 @@
 package main
 
 import (
-	"cli_tasks/api"
-	taskm "cli_tasks/task_manager"
+	"cli_tasks/cmd/api"
+	taskm "cli_tasks/internal/app/task_manager"
 	"fmt"
 	"log"
 	"os"
@@ -23,7 +23,7 @@ func main() {
 	fmt.Printf("CLI - Task Manager\n\n")
 	for {
 		tm.LoadTasks()
-		utils.CreateMenu([]string{"Create task", "Do a task", "Remove a task", "List all tasks", "Load existing tasks", "Exit"}, "Menu")
+		utils.CreateMenu([]string{"Create task", "Do a task", "Remove a task", "List all tasks", "Exit"}, "Menu")
 		fmt.Println()
 		switch option := utils.GetUserInput[int]("Choose a option: "); option {
 		case 1:
@@ -36,10 +36,8 @@ func main() {
 			taskName := utils.GetUserInput[string]("Type the task name: ")
 			api.RemoveTask(taskName)
 		case 4:
-			tm.ListTasks()
+			api.ListTasks()
 		case 5:
-			tm.LoadTasks()
-		case 6:
 			os.Exit(0)
 		}
 	}

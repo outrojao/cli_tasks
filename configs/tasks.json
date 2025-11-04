@@ -1,7 +1,7 @@
 [
  {
   "name": "correr",
-  "done": false
+  "done": true
  },
  {
   "name": "pular",
@@ -17,6 +17,10 @@
  },
  {
   "name": "deitar",
+  "done": true
+ },
+ {
+  "name": "levitar",
   "done": true
  }
 ]

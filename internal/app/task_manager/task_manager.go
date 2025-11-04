@@ -1,7 +1,7 @@
 package taskmanager
 
 import (
-	"cli_tasks/task"
+	"cli_tasks/internal/app/task"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -43,19 +43,6 @@ func (tm *TaskManager) DoTask(taskName string) {
 	}
 }
 
-func (tm TaskManager) ListTasks() {
-	if len(tm.Tasks) == 0 {
-		fmt.Println("You don't have any task!")
-		return
-	}
-
-	fmt.Println("Yours tasks:")
-	for i, task := range tm.Tasks {
-		fmt.Printf("#%d - %s\n", i+1, task.Name)
-	}
-	fmt.Println()
-}
-
 func (tm *TaskManager) SaveTasks() {
 	jsonData, err := json.MarshalIndent(tm.Tasks, "", " ")
 	if err != nil {
@@ -87,8 +74,18 @@ func (tm *TaskManager) LoadTasks() {
 }
 
 func CreateTaskManager() *TaskManager {
+	if _, err := os.Stat("./configs/tasks.json"); os.IsNotExist(err) {
+		emptyFile, err := os.Create("./configs/tasks.json")
+		if err != nil {
+			fmt.Printf("Could not create tasks.json file: %s\n", err.Error())
+			return nil
+		}
+		emptyFile.Write([]byte("[]"))
+		emptyFile.Close()
+	}
+
 	return &TaskManager{
-		localJsonDir: "./tasks.json",
+		localJsonDir: "./configs/tasks.json",
 		Tasks:        []task.Task{},
 	}
 }
