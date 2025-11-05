@@ -1,2 +1,4 @@
+github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
+github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/outrojao/mods v0.0.0-20250909221635-c165ada734a4 h1:qOafG+GFNOw974HB1zzb79R5kcQH28vGREnZ5GiJslg=
 github.com/outrojao/mods v0.0.0-20250909221635-c165ada734a4/go.mod h1:G7AKsyn5HydxArhcuafVRKO72cfzTNfsoSyHQTrzKtE=
