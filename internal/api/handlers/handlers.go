@@ -99,5 +99,6 @@ func ListTasks(w http.ResponseWriter, r *http.Request) {
 	tm.LoadTasks()
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(tm.Tasks)
 }
