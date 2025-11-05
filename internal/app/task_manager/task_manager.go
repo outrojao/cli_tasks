@@ -74,18 +74,30 @@ func (tm *TaskManager) LoadTasks() {
 }
 
 func CreateTaskManager() *TaskManager {
-	if _, err := os.Stat("./configs/tasks.json"); os.IsNotExist(err) {
-		emptyFile, err := os.Create("./configs/tasks.json")
-		if err != nil {
-			fmt.Printf("Could not create tasks.json file: %s\n", err.Error())
-			return nil
-		}
-		emptyFile.Write([]byte("[]"))
-		emptyFile.Close()
-	}
+	configPath := "configs/tasks.json"
 
-	return &TaskManager{
-		localJsonDir: "./configs/tasks.json",
+	tm := &TaskManager{
+		localJsonDir: configPath,
 		Tasks:        []task.Task{},
 	}
+
+	if err := os.MkdirAll("configs", 0755); err != nil {
+		fmt.Printf("Could not create configs directory: %s\n", err.Error())
+	}
+
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		fmt.Printf("Creating tasks.json file at: %s\n", configPath)
+		if err := os.WriteFile(configPath, []byte("[]"), 0644); err != nil {
+			fmt.Printf("Could not create tasks.json file: %s\n", err.Error())
+		} else {
+			fmt.Printf("Successfully created tasks.json\n")
+		}
+	}
+
+	return tm
+}
+
+func (tm *TaskManager) ResetForTesting(testFile string) {
+	tm.localJsonDir = testFile
+	tm.Tasks = []task.Task{}
 }
