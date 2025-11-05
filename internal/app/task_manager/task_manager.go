@@ -96,8 +96,3 @@ func CreateTaskManager() *TaskManager {
 
 	return tm
 }
-
-func (tm *TaskManager) ResetForTesting(testFile string) {
-	tm.localJsonDir = testFile
-	tm.Tasks = []task.Task{}
-}
