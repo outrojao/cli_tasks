@@ -6,7 +6,6 @@ import (
 )
 
 func InitRoutes() {
-	http.HandleFunc("/", handlers.Index)
 	http.HandleFunc("/create", handlers.CreateTask)
 	http.HandleFunc("/do/", handlers.DoTask)
 	http.HandleFunc("/remove/", handlers.RemoveTask)

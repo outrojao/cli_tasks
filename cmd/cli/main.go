@@ -1,24 +1,15 @@
-package main
+package cli
 
 import (
 	"cli_tasks/cmd/api"
 	taskm "cli_tasks/internal/app/task_manager"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/outrojao/mods/utils"
 )
 
-func main() {
-	apiStatus := make(chan bool, 1)
-	go api.InitApi(apiStatus)
-
-	if ok := <-apiStatus; !ok {
-		log.Fatal("Failed to start API server")
-		os.Exit(1)
-	}
-
+func InitCLI() {
 	tm := taskm.CreateTaskManager()
 	fmt.Printf("CLI - Task Manager\n\n")
 	for {
