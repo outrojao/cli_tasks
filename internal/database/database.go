@@ -3,28 +3,32 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 
-	"github.com/dotenv-org/godotenvvault"
 	_ "github.com/lib/pq"
 )
 
-func InitDatabase(status chan<- bool) {
-	if err := godotenvvault.Load(); err != nil {
-		log.Fatal("Error loading .env file:", err)
-	}
+var DB *sql.DB
 
-	db := ConectDatabase()
-	if db == nil {
+func InitDatabase(status chan<- bool) {
+	db, err := ConectDatabase()
+	if err != nil {
+		status <- false
+		return
+	}
+	DB = db
+	if err := DB.Ping(); err != nil {
+		status <- false
+		return
+	}
+	if err := CreateTables(); err != nil {
 		status <- false
 		return
 	}
 	status <- true
-	defer db.Close()
 }
 
-func ConectDatabase() (db *sql.DB) {
+func ConectDatabase() (*sql.DB, error) {
 	user := os.Getenv("DB_USER")
 	dbname := os.Getenv("DB_NAME")
 	password := os.Getenv("DB_PASSWORD")
@@ -34,7 +38,18 @@ func ConectDatabase() (db *sql.DB) {
 	connection := fmt.Sprintf("user=%s dbname=%s password=%s host=%s sslmode=%s", user, dbname, password, host, sslmode)
 	db, err := sql.Open("postgres", connection)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
-	return
+	return db, nil
+}
+
+func CloseDatabase() error {
+	if DB == nil {
+		return nil
+	}
+	if err := DB.Close(); err != nil {
+		return err
+	}
+	DB = nil
+	return nil
 }
