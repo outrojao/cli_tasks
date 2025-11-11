@@ -1,15 +1,14 @@
 package handlers
 
 import (
-	taskm "cli_tasks/internal/app/task_manager"
+	"cli_tasks/internal/app/task"
+	"cli_tasks/internal/database"
 	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 )
-
-var tm *taskm.TaskManager = taskm.CreateTaskManager()
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -32,9 +31,13 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tm.LoadTasks()
-	tm.AddTask(payload.TaskName)
-	tm.SaveTasks()
+	idTask, err := database.CreateTask(payload.TaskName)
+	if err != nil {
+		http.Error(w, "failed to create task", http.StatusInternalServerError)
+		return
+	}
+
+	_ = task.CreateTask(idTask, payload.TaskName) // opcional, apenas para resposta futura
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -55,9 +58,21 @@ func DoTask(w http.ResponseWriter, r *http.Request) {
 		taskName = unescaped
 	}
 
-	tm.LoadTasks()
-	tm.DoTask(taskName)
-	tm.SaveTasks()
+	t, err := database.GetTaskByName(taskName)
+	if err != nil {
+		http.Error(w, "task not found", http.StatusNotFound)
+		return
+	}
+
+	if t.Done {
+		http.Error(w, "task already done", http.StatusBadRequest)
+		return
+	}
+
+	if err := database.UpdateTaskStatus(t.Id, true); err != nil {
+		http.Error(w, "failed to update task status", http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -78,9 +93,16 @@ func RemoveTask(w http.ResponseWriter, r *http.Request) {
 		taskName = unescaped
 	}
 
-	tm.LoadTasks()
-	tm.RemoveTask(taskName)
-	tm.SaveTasks()
+	t, err := database.GetTaskByName(taskName)
+	if err != nil {
+		http.Error(w, "task not found", http.StatusNotFound)
+		return
+	}
+
+	if err := database.DeleteTask(t.Id); err != nil {
+		http.Error(w, "failed to delete task", http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -92,9 +114,13 @@ func ListTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tm.LoadTasks()
+	tasks, err := database.GetAllTasks()
+	if err != nil {
+		http.Error(w, "failed to fetch tasks", http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(tm.Tasks)
+	json.NewEncoder(w).Encode(tasks)
 }

@@ -69,7 +69,9 @@ func DoTask(taskName string) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode == http.StatusBadRequest {
+		fmt.Printf("Task is already done. Status code: %d\n", resp.StatusCode)
+	} else if resp.StatusCode != http.StatusOK {
 		fmt.Printf("Failed to do task. Status code: %d\n", resp.StatusCode)
 	}
 }
@@ -125,6 +127,10 @@ func ListTasks() {
 
 	fmt.Println("Yours tasks:")
 	for i, task := range tasks {
+		if task.Done {
+			fmt.Printf("#%d - %s (done)\n", i+1, task.Name)
+			continue
+		}
 		fmt.Printf("#%d - %s\n", i+1, task.Name)
 	}
 	fmt.Println()

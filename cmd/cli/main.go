@@ -2,29 +2,27 @@ package cli
 
 import (
 	"cli_tasks/cmd/api"
-	taskm "cli_tasks/internal/app/task_manager"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/outrojao/mods/utils"
 )
 
 func InitCLI() {
-	tm := taskm.CreateTaskManager()
 	fmt.Printf("CLI - Task Manager\n\n")
 	for {
-		tm.LoadTasks()
 		utils.CreateMenu([]string{"Create task", "Do a task", "Remove a task", "List all tasks", "Exit"}, "Menu")
 		fmt.Println()
 		switch option := utils.GetUserInput[int]("Choose a option: "); option {
 		case 1:
-			taskName := utils.GetUserInput[string]("Type the task name: ")
+			taskName := strings.ToUpper(strings.TrimSpace(utils.GetUserInput[string]("Type the task name: ")))
 			api.CreateTask(taskName)
 		case 2:
-			taskName := utils.GetUserInput[string]("Type the task name: ")
+			taskName := strings.ToUpper(strings.TrimSpace(utils.GetUserInput[string]("Type the task name: ")))
 			api.DoTask(taskName)
 		case 3:
-			taskName := utils.GetUserInput[string]("Type the task name: ")
+			taskName := strings.ToUpper(strings.TrimSpace(utils.GetUserInput[string]("Type the task name: ")))
 			api.RemoveTask(taskName)
 		case 4:
 			api.ListTasks()
