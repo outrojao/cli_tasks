@@ -9,7 +9,7 @@ import (
 func TestInitRoutes(t *testing.T) {
 	InitRoutes()
 
-	routes := []string{"/", "/create", "/do/", "/remove/", "/list"}
+	routes := []string{"/create", "/do/", "/remove/", "/list"}
 	for _, route := range routes {
 		_, pattern := http.DefaultServeMux.Handler(&http.Request{URL: &url.URL{Path: route}})
 		if pattern == "" {

@@ -1,21 +1,46 @@
 package handlers
 
 import (
+	"cli_tasks/internal/database"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 	"testing"
+
+	"github.com/dotenv-org/godotenvvault"
 )
 
+func setupTestDatabase(t *testing.T) {
+	if err := godotenvvault.Load("../../../configs/.env"); err != nil {
+		log.Fatal("Error loading .env file:", err)
+		os.Exit(1)
+	}
+
+	status := make(chan bool)
+	go database.InitDatabase(status)
+	if success := <-status; !success {
+		t.Fatal("failed to initialize database")
+	}
+}
+
+func teardownTestDatabase(t *testing.T) {
+	if err := database.CloseDatabase(); err != nil {
+		t.Fatalf("failed to close database: %v", err)
+	}
+}
+
 func TestCreateTaskApi(t *testing.T) {
+	setupTestDatabase(t)
+	defer teardownTestDatabase(t)
 	payload := `{"task_name":"TestTask"}`
 	req := httptest.NewRequest(http.MethodPost, "/create", strings.NewReader(payload))
 	req.Header.Set("Content-Type", "application/json")
 	rr := httptest.NewRecorder()
 
 	CreateTask(rr, req)
-	defer tm.RemoveTask("TestTask")
 
 	if rr.Code != http.StatusCreated {
 		t.Fatalf("expected status %d, got %d, body: %s", http.StatusCreated, rr.Code, rr.Body.String())
@@ -23,9 +48,9 @@ func TestCreateTaskApi(t *testing.T) {
 }
 
 func TestDoTaskApi(t *testing.T) {
+	setupTestDatabase(t)
+	defer teardownTestDatabase(t)
 	taskName := "TestTask"
-	tm.AddTask(taskName)
-	defer tm.RemoveTask(taskName)
 
 	taskNameEscaped := url.PathEscape(taskName)
 	url := "/do/" + taskNameEscaped
@@ -40,8 +65,9 @@ func TestDoTaskApi(t *testing.T) {
 }
 
 func TestRemoveTaskApi(t *testing.T) {
+	setupTestDatabase(t)
+	defer teardownTestDatabase(t)
 	taskName := "TestTask"
-	tm.AddTask(taskName)
 
 	taskNameEscaped := url.PathEscape(taskName)
 	url := "/remove/" + taskNameEscaped
@@ -56,6 +82,8 @@ func TestRemoveTaskApi(t *testing.T) {
 }
 
 func TestListTasksApi(t *testing.T) {
+	setupTestDatabase(t)
+	defer teardownTestDatabase(t)
 	req := httptest.NewRequest(http.MethodGet, "/list", nil)
 	rr := httptest.NewRecorder()
 
