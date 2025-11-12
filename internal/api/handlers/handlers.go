@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"cli_tasks/internal/app/task"
 	"cli_tasks/internal/database"
 	"encoding/json"
 	"io"
@@ -36,8 +35,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create task", http.StatusInternalServerError)
 		return
 	}
-
-	_ = task.CreateTask(idTask, payload.TaskName) // opcional, apenas para resposta futura
+	_ = idTask
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

@@ -3,7 +3,6 @@ package cli
 import (
 	"cli_tasks/cmd/api"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/outrojao/mods/utils"
@@ -27,7 +26,9 @@ func InitCLI() {
 		case 4:
 			api.ListTasks()
 		case 5:
-			os.Exit(0)
+			return
+		default:
+			fmt.Println("Invalid option. Please try again.")
 		}
 	}
 
