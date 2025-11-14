@@ -10,11 +10,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dotenv-org/godotenvvault"
+	"github.com/joho/godotenv"
 )
 
 func setupTestDatabase(t *testing.T) {
-	if err := godotenvvault.Load("../../../configs/.env"); err != nil {
+	if err := godotenv.Load("../../../configs/.env"); err != nil {
 		log.Fatal("Error loading .env file:", err)
 		os.Exit(1)
 	}
