@@ -1,7 +1,7 @@
 .PHONY: all build run test clean migrate rollback status create
 
 BINARY := main
-SRC := main.go
+SRC := ./cmd/cli/main.go
 BIN_DIR := bin
 MIGRATIONS_DIR := ./internal/database/migrations
 ENV_FILE := ./configs/.env

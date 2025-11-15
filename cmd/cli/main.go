@@ -1,35 +1,41 @@
-package cli
+package main
 
 import (
-	"cli_tasks/cmd/api"
-	"fmt"
-	"strings"
+	"cli_tasks/internal/api/client"
+	"cli_tasks/internal/cli"
+	"cli_tasks/internal/database"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/outrojao/mods/utils"
+	"github.com/joho/godotenv"
 )
 
-func InitCLI() {
-	fmt.Printf("CLI - Task Manager\n\n")
-	for {
-		utils.CreateMenu([]string{"Create task", "Do a task", "Remove a task", "List all tasks", "Exit"}, "Menu")
-		fmt.Println()
-		switch option := utils.GetUserInput[int]("Choose a option: "); option {
-		case 1:
-			taskName := strings.ToUpper(strings.TrimSpace(utils.GetUserInput[string]("Type the task name: ")))
-			api.CreateTask(taskName)
-		case 2:
-			taskName := strings.ToUpper(strings.TrimSpace(utils.GetUserInput[string]("Type the task name: ")))
-			api.DoTask(taskName)
-		case 3:
-			taskName := strings.ToUpper(strings.TrimSpace(utils.GetUserInput[string]("Type the task name: ")))
-			api.RemoveTask(taskName)
-		case 4:
-			api.ListTasks()
-		case 5:
-			return
-		default:
-			fmt.Println("Invalid option. Please try again.")
-		}
+func main() {
+	if err := godotenv.Load("configs/.env"); err != nil {
+		log.Fatal("Error loading .env file:", err)
+		os.Exit(1)
 	}
 
+	go database.InitDatabase(make(chan<- bool))
+	defer database.CloseDatabase()
+
+	if !client.HealthCheck() {
+		log.Fatal("API health check failed")
+		os.Exit(1)
+	}
+
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-shutdown
+		log.Println("Shutdown signal received")
+		if err := database.CloseDatabase(); err != nil {
+			log.Println("Error closing DB on shutdown:", err)
+		}
+		os.Exit(0)
+	}()
+
+	cli.InitMenu()
 }
