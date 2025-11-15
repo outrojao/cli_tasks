@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"cli_tasks/internal/api/client"
+	"cli_tasks/internal/client"
 	"fmt"
 	"strings"
 
