@@ -10,4 +10,5 @@ func InitRoutes() {
 	http.HandleFunc("/do/", handlers.DoTask)
 	http.HandleFunc("/remove/", handlers.RemoveTask)
 	http.HandleFunc("/list", handlers.ListTasks)
+	http.HandleFunc("/health", handlers.HealthCheck)
 }
