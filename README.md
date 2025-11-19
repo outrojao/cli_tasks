@@ -56,3 +56,9 @@ make run      # Executar o CLI
 make build    # Build do projeto
 make test     # Executar testes
 ```
+
+### Repositório da API
+
+```
+https://github.com/outrojao/cli_tarefas_api
+```
