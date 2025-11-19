@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"cli_tasks/internal/app/task"
+	"cli_tasks/internal/auth"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -23,6 +24,13 @@ func CreateTask(taskName string) {
 		return
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
+	jwtToken, err := auth.CreateToken()
+	if err != nil {
+		fmt.Println("failed to create JWT token:", err)
+		return
+	}
+	httpReq.Header.Set("Authorization", "Bearer "+jwtToken)
+
 	resp, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
 		fmt.Println("request error:", err)
@@ -42,6 +50,14 @@ func DoTask(taskName string) {
 		fmt.Println("request error:", err)
 		return
 	}
+
+	jwtToken, err := auth.CreateToken()
+	if err != nil {
+		fmt.Println("failed to create JWT token:", err)
+		return
+	}
+	httpReq.Header.Set("Authorization", "Bearer "+jwtToken)
+
 	resp, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
 		fmt.Println("request error:", err)
@@ -49,8 +65,8 @@ func DoTask(taskName string) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == http.StatusBadRequest {
-		fmt.Printf("Task is already done. Status code: %d\n", resp.StatusCode)
+	if resp.StatusCode == http.StatusNotModified {
+		fmt.Printf("Task is already done!\n")
 	} else if resp.StatusCode != http.StatusOK {
 		fmt.Printf("Failed to do task. Status code: %d\n", resp.StatusCode)
 	}
@@ -63,6 +79,14 @@ func RemoveTask(taskName string) {
 		fmt.Println("request error:", err)
 		return
 	}
+
+	jwtToken, err := auth.CreateToken()
+	if err != nil {
+		fmt.Println("failed to create JWT token:", err)
+		return
+	}
+	httpReq.Header.Set("Authorization", "Bearer "+jwtToken)
+
 	resp, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
 		fmt.Println("request error:", err)
@@ -82,6 +106,14 @@ func ListTasks() {
 		fmt.Println("request error:", err)
 		return
 	}
+
+	jwtToken, err := auth.CreateToken()
+	if err != nil {
+		fmt.Println("failed to create JWT token:", err)
+		return
+	}
+	httpReq.Header.Set("Authorization", "Bearer "+jwtToken)
+
 	resp, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
 		fmt.Println("request error:", err)
