@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -11,6 +12,10 @@ func CreateToken() (string, error) {
 	secretKey := []byte(os.Getenv("JWT_SECRET"))
 	sub := os.Getenv("JWT_HEADER_SUB")
 	iss := os.Getenv("JWT_HEADER_ISS")
+
+	if secretKey == nil || sub == "" || iss == "" {
+		return "", fmt.Errorf("invalid jwt header")
+	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": sub,
